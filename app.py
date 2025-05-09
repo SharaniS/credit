@@ -2,36 +2,29 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load the model
+# Load trained model
 model = joblib.load("credit_model.pkl")
-  # Make sure this matches your model filename
 
-# Load the dataset
+# Title
+st.title("Credit Card Fraud Detection")
+
+# Load dataset
 data = pd.read_csv("Credit_card_pred.csv")
 
-# Drop the target column (if it's included)
-if 'Class' in data.columns:
-    features_df = data.drop(columns=['Class'])
-else:
-    features_df = data.copy()
+# Show dataset option
+if st.checkbox("Show sample dataset"):
+    st.write(data.head())
 
-# Streamlit UI
-st.title("Credit Card Fraud Detection")
-card_number = st.text_input("Enter Credit Card Number:")
+# Select a row for prediction
+row_index = st.number_input("Select Row Index for Prediction", min_value=0, max_value=len(data)-1, value=0)
 
-if card_number:
-    if card_number.isdigit() and len(card_number) >= 6:  # Basic format check
-        matched_row = features_df[features_df['Credit card number'] == int(card_number)]
+# Extract features (exclude the target label 'Class')
+features = data.drop(columns=["Class"]).iloc[[row_index]]
 
-        if not matched_row.empty:
-            features = matched_row.drop(columns=['Credit card number'])
-            prediction = model.predict(features)[0]
-            
-            if prediction == 1:
-                st.error("⚠️ Fraudulent Transaction Detected!")
-            else:
-                st.success("✅ Legitimate Transaction.")
-        else:
-            st.warning("Credit card number not found in the dataset.")
+# Predict
+if st.button("Predict Fraud"):
+    prediction = model.predict(features)[0]
+    if prediction == 1:
+        st.error("⚠️ Alert: This transaction is predicted to be FRAUDULENT.")
     else:
-        st.error("Invalid credit card number format.")
+        st.success("✅ This transaction is predicted to be NOT FRAUDULENT.")
