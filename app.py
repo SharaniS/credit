@@ -9,7 +9,8 @@ model = joblib.load("credit_model.pkl")
 # Load dataset with credit card numbers
 @st.cache_data
 def load_data():
-    df = pd.read_csv("creditcard.csv")  # Make sure it's in the same folder as app
+    df = pd.read_csv("Credit_card_pred.csv")
+  # Make sure it's in the same folder as app
     return df
 
 df = load_data()
