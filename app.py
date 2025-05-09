@@ -23,7 +23,7 @@ card_input = st.text_input("Enter Credit Card Number:")
 
 if card_input:
     # Try to find the row with this credit card number
-    matching_row = df[df['Credit card number'] == int(card_input)
+    matching_row = df[df['Credit card number'] == int(card_input)]
 
     if not matching_row.empty:
         # Drop columns that are not part of the model input
