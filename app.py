@@ -1,30 +1,45 @@
-
 import streamlit as st
+import pandas as pd
+import joblib
 import numpy as np
-import pickle
 
-# Load the trained model
-with open("credit_model.pkl", "rb") as f:
-    model = pickle.load(f)
+# Load trained model
+model = joblib.load("credit_model.pkl")
 
+# Load dataset with credit card numbers
+@st.cache_data
+def load_data():
+    df = pd.read_csv("creditcard.csv")  # Make sure it's in the same folder as app
+    return df
+
+df = load_data()
+
+# App title
 st.title("💳 Credit Card Fraud Detection")
-st.write("Enter transaction details below:")
 
-# Input fields based on your model's features
-V1 = st.number_input("V1")
-V2 = st.number_input("V2")
-V3 = st.number_input("V3")
-V4 = st.number_input("V4")
-V5 = st.number_input("V5")
-Amount = st.number_input("Amount")
+# Input: credit card number
+card_input = st.text_input("Enter Credit Card Number:")
 
-# Combine into an input array
-input_data = np.array([[V1, V2, V3, V4, V5, Amount]])
+if card_input:
+    # Try to find the row with this credit card number
+    matching_row = df[df['credit_card_no'] == card_input]
 
-# Prediction
-if st.button("Predict Fraud"):
-    prediction = model.predict(input_data)[0]
-    if prediction == 1:
-        st.error("🚨 Fraudulent Transaction Detected!")
+    if not matching_row.empty:
+        # Drop columns that are not part of the model input
+        try:
+            features = matching_row.drop(columns=["credit_card_no", "Class"])
+        except:
+            features = matching_row.iloc[:, 1:-1]  # fallback if column names differ
+
+        # Predict
+        prediction = model.predict(features)
+
+        # Output
+        if prediction[0] == 1:
+            st.error("⚠️ Fraudulent Transaction Detected!")
+        else:
+            st.success("✅ Legitimate Transaction.")
+
     else:
-        st.success("✅ Transaction is Legitimate.")
+        st.warning("❗ Credit Card Number not found in dataset.")
+
