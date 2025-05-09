@@ -3,7 +3,8 @@ import pandas as pd
 import joblib
 
 # Load the model
-model = joblib.load("fraud_detection_model.pkl")  # Make sure this matches your model filename
+model = joblib.load("credit_model.pkl")
+  # Make sure this matches your model filename
 
 # Load the dataset
 data = pd.read_csv("Credit_card_pred.csv")
