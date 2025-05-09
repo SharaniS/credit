@@ -1,46 +1,42 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import numpy as np
 
-# Load trained model
+# Load model
 model = joblib.load("credit_model.pkl")
 
-# Load dataset with credit card numbers
+# Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("Credit_card_pred.csv")
-  # Make sure it's in the same folder as app
-    return df
+    return pd.read_csv("Credit_card_pred.csv")
 
 df = load_data()
 
-# App title
-st.title("💳 Credit Card Fraud Detection")
-
-# Input: credit card number
+# Streamlit UI
+st.title("Credit Card Fraud Detection")
 card_input = st.text_input("Enter Credit Card Number:")
 
 if card_input:
-    # Try to find the row with this credit card number
-    matching_row = df[df['Credit card number'] == int(card_input)]
+    try:
+        # Convert to int if needed (adjust based on your dataset's format)
+        card_input = int(card_input)
 
-    if not matching_row.empty:
-        # Drop columns that are not part of the model input
-        try:
-            features = matching_row.drop(columns=["credit_card_no", "Class"])
-        except:
-            features = matching_row.iloc[:, 1:-1]  # fallback if column names differ
+        # Find matching row
+        matching_row = df[df['Credit card number'] == card_input]
 
-        # Predict
-        prediction = model.predict(features)
+        if not matching_row.empty:
+            # Drop non-feature columns
+            features = matching_row.drop(columns=['Credit card number', 'Time', 'Class'])
 
-        # Output
-        if prediction[0] == 1:
-            st.error("⚠️ Fraudulent Transaction Detected!")
+            # Predict
+            prediction = model.predict(features)[0]
+
+            if prediction == 1:
+                st.error("⚠️ This transaction is predicted to be FRAUDULENT.")
+            else:
+                st.success("✅ This transaction is predicted to be NOT FRAUDULENT.")
         else:
-            st.success("✅ Legitimate Transaction.")
+            st.warning("No matching credit card number found in the dataset.")
 
-    else:
-        st.warning("❗ Credit Card Number not found in dataset.")
-
+    except ValueError:
+        st.error("Invalid credit card number format.")
