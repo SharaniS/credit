@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 # Load the trained model
-with open("credit_model (3).pkl", "rb") as f:
+with open("credit_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 st.title("💳 Credit Card Fraud Detection (Static Output)")
