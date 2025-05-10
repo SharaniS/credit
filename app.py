@@ -1,46 +1,41 @@
+import streamlit as st
 import pandas as pd
 import joblib
 
-# Load your dataset
-df = pd.read_csv('Credit_card_pred.csv')
+# Load the trained model
 
-# Clean column names to ensure consistency
-df.columns = df.columns.str.strip()  # Remove any leading or trailing spaces
-df.columns = df.columns.str.capitalize()  # Capitalize the column names to match training
+model = joblib.load("credit\_model.pkl")
 
-# Define the feature columns dynamically if the model provides them
-try:
-    model = joblib.load('credit_model (3).pkl')  # Ensure the path to the model is correct
-    feature_columns = model.feature_names_in_  # Use model's feature names if available
-except AttributeError:
-    feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+st.title("💳 Credit Card Fraud Detection")
+st.write("Enter transaction details to check if it's Fraudulent or Legitimate.")
 
-# Remove unnecessary columns
-columns_to_drop = ['Class', 'Predictions', 'Credit card number']
-df = df.drop(columns=[col for col in columns_to_drop if col in df.columns], errors='ignore')
+# Create input fields for key features — you can expand this list as needed
 
-# Ensure all required features are present in the DataFrame
-for col in feature_columns:
-    if col not in df.columns:
-        df[col] = 0  # Fill missing columns with default value
+V1 = st.number\_input("V1")
+V2 = st.number\_input("V2")
+V3 = st.number\_input("V3")
+V4 = st.number\_input("V4")
+V5 = st.number\_input("V5")
+V6 = st.number\_input("V6")
+V7 = st.number\_input("V7")
+V8 = st.number\_input("V8")
+V9 = st.number\_input("V9")
+V10 = st.number\_input("V10")
+Amount = st.number\_input("Transaction Amount")
+Time = st.number\_input("Transaction Time")
 
-# Extract the features (X) from the dataframe
-X = df[feature_columns]
+# Predict button
 
-# Handle missing values
-X = X.fillna(0)
+if st.button("🔍 Predict"):
+\# You must match the order and columns your model was trained on
+input\_df = pd.DataFrame(\[\[V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, Amount, Time]],
+columns=\['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'Amount', 'Time'])
 
-# Make predictions
-predictions = model.predict(X)
+```
+prediction = model.predict(input_df)[0]
 
-# Add predictions to the original dataframe
-df['prediction'] = predictions
-
-# Map predictions to 'Fraud' and 'Not Fraud'
-df['prediction_label'] = df['prediction'].map({0: 'Not Fraud', 1: 'Fraud'})
-
-# Show the first 10 rows (Time, Amount, and Prediction Label)
-results = df[['Time', 'Amount', 'prediction_label']].head(10)
-
-# Display the results
-print(results)
+if prediction == 1:
+    st.error("⚠️ Alert! This transaction is predicted to be FRAUDULENT.")
+else:
+    st.success("✅ This transaction is predicted to be LEGITIMATE.")  what about this code
+```
