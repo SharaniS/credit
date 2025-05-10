@@ -11,7 +11,7 @@ feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
 X = df[feature_columns]
 
 # Load your trained model
-model = joblib.load('/mnt/data/credit_model.pkl')
+model = joblib.load('credit_model.pkl')
 
 # Make predictions
 predictions = model.predict(X)
