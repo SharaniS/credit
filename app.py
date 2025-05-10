@@ -4,11 +4,12 @@ import joblib
 # Load your dataset
 df = pd.read_csv('Credit_card_pred.csv')
 
-# Clean column names to avoid issues with extra spaces or case mismatches
-df.columns = df.columns.str.strip().str.lower()  # Strip spaces and make lowercase
+# Normalize column names to match the model's training columns (case-sensitive)
+df.columns = df.columns.str.strip()  # Remove any leading or trailing spaces
+df.columns = df.columns.str.capitalize()  # Capitalize first letters to match model's training data
 
-# Define the feature columns as per the model's training data
-feature_columns = ['time'] + [f'v{i}' for i in range(1, 29)] + ['amount']  # Adjust according to your dataset and training
+# Define the feature columns exactly as used during training
+feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
 
 # Check if all feature columns are present in the dataframe
 missing_columns = [col for col in feature_columns if col not in df.columns]
@@ -34,7 +35,7 @@ df['prediction'] = predictions
 df['prediction_label'] = df['prediction'].map({0: 'Not Fraud', 1: 'Fraud'})
 
 # Show the first 10 rows (Time, Amount, and Prediction Label)
-results = df[['time', 'amount', 'prediction_label']].head(10)
+results = df[['Time', 'Amount', 'prediction_label']].head(10)
 
 # Display the results
 print(results)
