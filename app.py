@@ -11,6 +11,9 @@ with open("credit_model.pkl", "rb") as f:
 data = pd.read_csv("Credit_card_pred.csv")
 data["Credit card number"] = data["Credit card number"].astype(str)
 
+# Define the actual feature columns used for prediction (only up to V28)
+feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+
 # Streamlit app UI
 st.title("💳 Credit Card Fraud Detection")
 card_number = st.text_input("Enter Credit Card Number:")
@@ -23,17 +26,18 @@ if st.button("Check Fraud Status"):
         st.warning("❗ Credit card number not found.")
     else:
         try:
-            # Extract the 32 features used for prediction
-            feature_columns = ['Time'] + [f'V{i}' for i in range(1, 32)] + ['Amount']
+            # Extract only the required feature columns
             input_data = record[feature_columns].values
 
-            # Predict
-            prediction = model.predict(input_data)[0]
+            # Predict for each transaction
+            predictions = model.predict(input_data)
 
-            # Display result
-            if prediction == 1:
-                st.error("🚨 Fraudulent Transaction Detected!")
-            else:
-                st.success("✅ Transaction is Legitimate.")
+            # Display results for each transaction
+            for i, prediction in enumerate(predictions):
+                st.markdown(f"**Transaction {i+1}:**")
+                if prediction == 1:
+                    st.error("🚨 Fraudulent Transaction Detected!")
+                else:
+                    st.success("✅ Transaction is Legitimate.")
         except Exception as e:
             st.error(f"Error during prediction: {e}")
