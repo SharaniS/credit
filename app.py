@@ -1,37 +1,31 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import pickle
 
-# Load dataset
+# Load the trained model
+with open("credit_model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+# Load the credit card transaction lookup data
 data = pd.read_csv("Credit_card_pred.csv")
+data["Credit card number"] = data["Credit card number"].astype(str)
 
-# Clean column names (remove extra spaces)
-data.columns = data.columns.str.strip()
+st.title("💳 Credit Card Fraud Detection")
 
-# Title
-st.title("Credit Card Fraud Detection")
-
-# Option to display the dataset
-if st.checkbox("Show sample dataset"):
-    st.write(data.head())
-
-# Input for Credit Card Number
 card_number = st.text_input("Enter Credit Card Number:")
 
-# Search and Predict
 if st.button("Check Fraud Status"):
-    if card_number == "":
-        st.warning("Please enter a credit card number.")
-    elif card_number not in data["Credit card number"].astype(str).values:
+    record = data[data["Credit card number"] == card_number]
 
-        st.error("Credit card number not found in the dataset.")
+    if record.empty:
+        st.warning("❗ Credit card number not found.")
     else:
-        # Get the corresponding transaction row
-        row = data[data["Credit card number"].astype(str) == card_number]
+        # Select only the model input features
+        input_data = record[["V1", "V2", "V3", "V4", "V5", "Amount"]].values
+        prediction = model.predict(input_data)[0]
 
-        # Get fraud label
-        fraud_label = row["isFraud"].values[0]
-
-        if fraud_label == 1:
-            st.error("⚠️ FRAUDULENT TRANSACTION recorded.")
+        if prediction == 1:
+            st.error("🚨 Fraudulent Transaction Detected!")
         else:
-            st.success("✅ Legitimate transaction recorded.")
+            st.success("✅ Transaction is Legitimate.")
