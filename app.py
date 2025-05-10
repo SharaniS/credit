@@ -4,6 +4,9 @@ import pandas as pd
 # Load dataset
 data = pd.read_csv("Credit_card_pred.csv")
 
+# Clean column names (remove extra spaces)
+data.columns = data.columns.str.strip()
+
 # Title
 st.title("Credit Card Fraud Detection")
 
@@ -11,18 +14,21 @@ st.title("Credit Card Fraud Detection")
 if st.checkbox("Show sample dataset"):
     st.write(data.head())
 
-# Input for Credit Card Number (ID)
+# Input for Credit Card Number
 card_number = st.text_input("Enter Credit Card Number:")
 
-# Search logic based on actual 'Class' column
+# Search and Predict
 if st.button("Check Fraud Status"):
     if card_number == "":
         st.warning("Please enter a credit card number.")
-    elif card_number not in data["ID"].astype(str).values:
+    elif card_number not in data["credit card number"].astype(str).values:
         st.error("Credit card number not found in the dataset.")
     else:
-        row = data[data["ID"].astype(str) == card_number]
-        fraud_label = row["Class"].values[0]
+        # Get the corresponding transaction row
+        row = data[data["credit card number"].astype(str) == card_number]
+
+        # Get fraud label
+        fraud_label = row["isFraud"].values[0]
 
         if fraud_label == 1:
             st.error("⚠️ FRAUDULENT TRANSACTION recorded.")
