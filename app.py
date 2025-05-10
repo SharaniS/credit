@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 
 # Load trained model
-with open("credit_model.pkl", "rb") as f:
+with open("credit_model(1).pkl", "rb") as f:
     model = pickle.load(f)
 
 # Load transaction data
