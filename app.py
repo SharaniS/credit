@@ -21,11 +21,12 @@ card_number = st.text_input("Enter Credit Card Number:")
 if st.button("Check Fraud Status"):
     if card_number == "":
         st.warning("Please enter a credit card number.")
-    elif card_number not in data["credit card number"].astype(str).values:
+    elif card_number not in data["Credit card number"].astype(str).values:
+
         st.error("Credit card number not found in the dataset.")
     else:
         # Get the corresponding transaction row
-        row = data[data["credit card number"].astype(str) == card_number]
+        row = data[data["Credit card number"].astype(str) == card_number]
 
         # Get fraud label
         fraud_label = row["isFraud"].values[0]
