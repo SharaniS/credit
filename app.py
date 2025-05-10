@@ -1,22 +1,24 @@
-import streamlit as st
-import numpy as np
-import pickle
+import pandas as pd
+import joblib
 
-# Load the trained model
-with open("credit_model.pkl", "rb") as f:
-    model = pickle.load(f)
+# Load your dataset
+df = pd.read_csv('/mnt/data/Credit_card_pred.csv')
 
-st.title("💳 Credit Card Fraud Detection (Static Output)")
+# Define the features used by the model
+feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
 
-# Predefined credit card numbers and example features (features are placeholders)
-card_numbers = [
-    ("6310836524182291", [0.1, -1.2, 0.5, 1.0, -0.7, 110.0]),  # Expected: False
-    ("7674734919115658", [1.5, -0.8, 0.9, -1.1, 0.3, 300.0]),  # Expected: True
-]
+# Extract features
+X = df[feature_columns]
 
-# Display predictions
-for number, features in card_numbers:
-    input_array = np.array([features])
-    prediction = model.predict(input_array)[0]
-    st.write(f"**Credit Card Number:** `{number}` — **Fraudulent:** {bool(prediction)}")
-    st.markdown("---")
+# Load your trained model
+model = joblib.load('/mnt/data/credit_model.pkl')
+
+# Make predictions
+predictions = model.predict(X)
+
+# Add predictions to the DataFrame
+df['Prediction'] = predictions
+df['Prediction_Label'] = df['Prediction'].map({0: 'Not Fraud', 1: 'Fraud'})
+
+# Show the first 10 results
+df[['Time', 'Amount', 'Prediction_Label']].head(10)
