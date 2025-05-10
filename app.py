@@ -17,7 +17,8 @@ model = joblib.load('/mnt/data/credit_model.pkl')
 predictions = model.predict(X)
 
 # Add predictions to the DataFrame
-df['Prediction'] = predictions
+results_df = X_test.copy()
+results_df['Prediction'] = predictions  # ✅ Safe way
 df['Prediction_Label'] = df['Prediction'].map({0: 'Not Fraud', 1: 'Fraud'})
 
 # Show the first 10 results
