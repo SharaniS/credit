@@ -2,7 +2,7 @@ import pandas as pd
 import joblib
 
 # Load your dataset
-df = pd.read_csv('/mnt/data/Credit_card_pred.csv')
+df = pd.read_csv('Credit_card_pred.csv')
 
 # Define the features used by the model
 feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
