@@ -24,7 +24,7 @@ if st.button("Check Fraud Status"):
     else:
         try:
             # Extract the 32 features used for prediction
-            feature_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+            feature_columns = ['Time'] + [f'V{i}' for i in range(1, 32)] + ['Amount']
             input_data = record[feature_columns].values
 
             # Predict
