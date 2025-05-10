@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load the trained model
-model = joblib.load("credit_model.pkl")  # Make sure the file exists in the same directory
+model = joblib.load("credit_model (3).pkl")  # Make sure the file exists in the same directory
 
 st.title("💳 Credit Card Fraud Detection")
 st.write("Enter transaction details to check if it's Fraudulent or Legitimate.")
